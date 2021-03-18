@@ -63,6 +63,7 @@ Time-Manager:
     Build-Time: 120
     # Time in lobby to wait before start
     Lobby-Starting-Time: 60
+    Number-Of-Rounds: 5
   Classic:
     # Total time of voting per player plot
     Voting-Time-In-Seconds: 20
