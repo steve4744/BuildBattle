@@ -5,3 +5,8 @@
 /minecraft/
 /docs/
 .*
+.classpath
+.project
+.settings/
+bin/
+/target/
