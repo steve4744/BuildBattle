@@ -21,6 +21,7 @@
 package plugily.projects.buildbattle.arena.impl;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -48,9 +49,6 @@ import plugily.projects.buildbattle.handlers.reward.Reward;
 import plugily.projects.buildbattle.menus.options.registry.particles.ParticleRefreshScheduler;
 import plugily.projects.buildbattle.menus.themevoter.BBTheme;
 import plugily.projects.buildbattle.user.User;
-import plugily.projects.buildbattle.utils.Debugger;
-import plugily.projects.buildbattle.utils.MessageUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -202,8 +200,10 @@ public class GuessTheBuildArena extends BaseArena {
               .replace("%ROUND%", String.valueOf(round))
               .replace("%MAXPLAYERS%", String.valueOf(getPlayers().size()));
           for(Player p : getPlayers()) {
-            VersionUtils.sendTitle(p, getPlugin().getChatManager().colorMessage("In-Game.Guess-The-Build.Start-Guessing-Title"), 5, 25, 5);
-            p.sendMessage(roundMessage);
+        	  if (p != currentBuilder) {
+        		  VersionUtils.sendTitle(p, getPlugin().getChatManager().colorMessage("In-Game.Guess-The-Build.Start-Guessing-Title"), 5, 25, 5);
+        	  }
+        	  p.sendMessage(roundMessage);
           }
           setTimer(getPlugin().getConfigPreferences().getTimer(ConfigPreferences.TimerType.BUILD, this));
           break;
@@ -232,7 +232,7 @@ public class GuessTheBuildArena extends BaseArena {
               }
               actionbar.append("_ ");
             }
-            VersionUtils.sendActionBar(player, actionbar.toString());
+            VersionUtils.sendActionBar(player, ChatColor.AQUA + actionbar.toString());
           }
         }
         if(getTimer() <= 0 && isThemeSet()) {
@@ -245,6 +245,7 @@ public class GuessTheBuildArena extends BaseArena {
           setThemeSet(false);
           setCurrentTheme(null);
           whoGuessed.clear();
+          getPlotManager().getPlots().get(0).resetPlot();
           round++;
           if(round > getPlayers().size()) {
         	  longRound++;
@@ -256,10 +257,10 @@ public class GuessTheBuildArena extends BaseArena {
             	  longRound = 1;
             	  break;
               }
+              round = 1;
           }
 
           //TODO marker/
-          getPlugin().getLogger().info("longround = " + longRound + ", round = " + round);
           setTimer(getPlugin().getConfigPreferences().getTimer(ConfigPreferences.TimerType.DELAYED_TASK, this));
           nextRoundCooldown = true;
           Bukkit.getScheduler().runTaskLater(getPlugin(), () -> {
@@ -278,9 +279,7 @@ public class GuessTheBuildArena extends BaseArena {
 
               p.setGameMode(GameMode.SPECTATOR);
             }
-            if (plot != null) {
-              plot.getOwners().get(0).setGameMode(GameMode.CREATIVE);
-            }
+            currentBuilder.setGameMode(GameMode.CREATIVE);
             setTimer(getPlugin().getConfigPreferences().getTimer(ConfigPreferences.TimerType.THEME_SELECTION, this));
             if(getArenaState() != ArenaState.IN_GAME || isThemeSet()) {
               return;
@@ -542,4 +541,9 @@ public class GuessTheBuildArena extends BaseArena {
   public Map<Player, Integer> getPlayersPoints() {
     return playersPoints;
   }
+
+  public int getLongRound() {
+	  return longRound;
+  }
+
 }

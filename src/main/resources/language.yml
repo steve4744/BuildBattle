@@ -109,7 +109,7 @@ Scoreboard:
         - "&fTheme:"
         - "&c%THEME%"
         - ""
-        - "&ewww.plugily.xyz"
+        - "&eRound: %RNUM%/%RMAX%"
     Starting:
       - "&fPlayers: &e%PLAYERS%"
       - ""

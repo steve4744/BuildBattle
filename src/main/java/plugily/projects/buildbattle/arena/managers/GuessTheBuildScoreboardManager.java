@@ -25,6 +25,8 @@ import me.tigerhix.lib.scoreboard.common.EntryBuilder;
 import me.tigerhix.lib.scoreboard.type.Entry;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
+
+import plugily.projects.buildbattle.ConfigPreferences;
 import plugily.projects.buildbattle.arena.ArenaState;
 import plugily.projects.buildbattle.arena.impl.BaseArena;
 import plugily.projects.buildbattle.arena.impl.GuessTheBuildArena;
@@ -88,6 +90,9 @@ public class GuessTheBuildScoreboardManager extends ScoreboardManager {
     String returnString = string;
     returnString = StringUtils.replace(returnString, "%PLAYERS%", Integer.toString(arena.getPlayers().size()));
     returnString = StringUtils.replace(returnString, "%PLAYER%", player.getName());
+    returnString = StringUtils.replace(returnString, "%RNUM%", String.valueOf(arena.getLongRound()));
+    returnString = StringUtils.replace(returnString, "%RMAX%",
+    		String.valueOf(getPlugin().getConfigPreferences().getTimer(ConfigPreferences.TimerType.NUMBER_OF_ROUNDS, arena)));
     if(arena.isThemeSet()) {
       returnString = StringUtils.replace(returnString, "%CURRENT_TIMER%", getPlugin().getChatManager().colorMessage("Scoreboard.GTB-Current-Timer.Build-Time"));
     } else {

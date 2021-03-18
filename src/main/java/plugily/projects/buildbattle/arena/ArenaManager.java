@@ -234,7 +234,7 @@ public class ArenaManager {
 
     chatManager.broadcastAction(arena, player, ChatManager.ActionType.JOIN);
     VersionUtils.sendTitles(player, chatManager.colorMessage("In-Game.Messages.Join-Title").replace("%ARENANAME%", arena.getMapName()),
-        chatManager.colorMessage("In-Game.Messages.Join-SubTitle").replace("%ARENANAME%", arena.getMapName()) , 5, 40, 5);
+        chatManager.colorMessage("In-Game.Messages.Join-SubTitle").replace("%ARENANAME%", arena.getMapName()).replace("%PLAYER%", player.getName()) , 5, 40, 5);
     plugin.getSignManager().updateSigns();
   }
 
