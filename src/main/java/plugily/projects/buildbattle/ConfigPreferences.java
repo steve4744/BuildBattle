@@ -157,6 +157,8 @@ public class ConfigPreferences {
         return plugin.getConfig().getInt(prefix + "Theme-Selection-Time-In-Seconds", 15);
       case ALL_GUESSED:
         return plugin.getConfig().getInt(prefix + "All-Guessed-In-Seconds", 5);
+      case NUMBER_OF_ROUNDS:
+          return plugin.getConfig().getInt(prefix + "Number-Of-Rounds", 1);
       default:
         return 0;
     }
@@ -173,7 +175,7 @@ public class ConfigPreferences {
   }
 
   public enum TimerType {
-    BUILD, LOBBY, PLOT_VOTE, THEME_VOTE, DELAYED_TASK, TIME_SHORTENER, THEME_SELECTION, ALL_GUESSED
+    BUILD, LOBBY, PLOT_VOTE, THEME_VOTE, DELAYED_TASK, TIME_SHORTENER, THEME_SELECTION, ALL_GUESSED, NUMBER_OF_ROUNDS
   }
 
   public enum Option {
