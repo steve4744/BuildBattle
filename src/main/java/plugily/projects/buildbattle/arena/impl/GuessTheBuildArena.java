@@ -69,6 +69,7 @@ public class GuessTheBuildArena extends BaseArena {
   private final List<Player> whoGuessed = new ArrayList<>();
   private final GuessTheBuildScoreboardManager scoreboardManager;
   private int round = 1;
+  private int longRound = 1;
   private BBTheme currentTheme;
   private boolean themeSet;
   private boolean nextRoundCooldown = false;
@@ -135,6 +136,8 @@ public class GuessTheBuildArena extends BaseArena {
           for(Player player : getPlayers()) {
             playersPoints.put(player, 0);
           }
+          //TODO marker
+          // only 1 plot, so plot will be shared
           distributePlots();
           getPlotManager().teleportToPlots();
           setTimer(getPlugin().getConfigPreferences().getTimer(ConfigPreferences.TimerType.DELAYED_TASK, this));
@@ -168,6 +171,8 @@ public class GuessTheBuildArena extends BaseArena {
         }
         if(currentBuilder == null && !nextRoundCooldown) {
           currentBuilder = getPlayers().get(round - 1);
+          //TODO marker
+          allocatePlot(currentBuilder);
           openThemeSelectionInventoryToCurrentBuilder();
           setTimer(getPlugin().getConfigPreferences().getTimer(ConfigPreferences.TimerType.THEME_SELECTION, this));
           break;
@@ -242,19 +247,26 @@ public class GuessTheBuildArena extends BaseArena {
           whoGuessed.clear();
           round++;
           if(round > getPlayers().size()) {
-            setTimer(15);
-            setArenaState(ArenaState.ENDING);
-            Bukkit.getPluginManager().callEvent(new BBGameEndEvent(this));
-            break;
+        	  longRound++;
+              if (longRound > getPlugin().getConfigPreferences().getTimer(ConfigPreferences.TimerType.NUMBER_OF_ROUNDS, this)) {
+            	  setTimer(15);
+            	  setArenaState(ArenaState.ENDING);
+            	  Bukkit.getPluginManager().callEvent(new BBGameEndEvent(this));
+            	  round = 1;
+            	  longRound = 1;
+            	  break;
+              }
           }
 
+          //TODO marker/
+          getPlugin().getLogger().info("longround = " + longRound + ", round = " + round);
           setTimer(getPlugin().getConfigPreferences().getTimer(ConfigPreferences.TimerType.DELAYED_TASK, this));
           nextRoundCooldown = true;
           Bukkit.getScheduler().runTaskLater(getPlugin(), () -> {
             nextRoundCooldown = false;
             currentBuilder = getPlayers().get(round - 1);
             openThemeSelectionInventoryToCurrentBuilder();
-            Plot plot = getPlotManager().getPlot(getPlayers().get(round - 1));
+            Plot plot = getPlotManager().getPlots().get(0);
             for(Player p : getPlayers()) {
               if (plot != null) {
                 if(plot.getTeleportLocation() != null) {
@@ -361,6 +373,7 @@ public class GuessTheBuildArena extends BaseArena {
         whoGuessed.clear();
         playersPoints.clear();
         round = 1;
+        longRound = 1;
         clearPlayers();
         nextRoundCooldown = false;
         setTimer(14);
@@ -459,24 +472,21 @@ public class GuessTheBuildArena extends BaseArena {
     for(Plot plot : getPlotManager().getPlots()) {
       plot.getOwners().clear();
     }
-    List<Player> players = new ArrayList<>(getPlayers());
-    for(Plot plot : getPlotManager().getPlots()) {
-      if(players.isEmpty()) {
-        break;
-      }
-      plot.addOwner(players.get(0));
-      getPlugin().getUserManager().getUser(players.get(0)).setCurrentPlot(plot);
-      players.remove(0);
-    }
-    if(!players.isEmpty()) {
-      MessageUtils.errorOccurred();
-      Debugger.sendConsoleMsg("&c[BuildBattle] [PLOT WARNING] Not enough plots in arena " + getID() + "!");
-      Debugger.sendConsoleMsg("&c[PLOT WARNING] Required " + getPlayers().size() + " but have " + getPlotManager().getPlots().size());
-      Debugger.sendConsoleMsg("&c[PLOT WARNING] Instance was stopped!");
-      ArenaManager.stopGame(false, this);
+    // add all players to single plot
+    Plot plot = getPlotManager().getPlots().get(0);
+    for (Player player : getPlayers()) {
+        plot.addOwner(player);
+        getPlugin().getUserManager().getUser(player).setCurrentPlot(plot);
     }
   }
 
+  //TODO marker
+  private void allocatePlot(Player player) {
+      Plot plot = getPlotManager().getPlots().get(0);
+      plot.getOwners().clear();
+      plot.addOwner(player);
+  }
+ 
   public int getRound() {
     return round;
   }
