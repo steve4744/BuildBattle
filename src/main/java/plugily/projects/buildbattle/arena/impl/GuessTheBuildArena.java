@@ -49,10 +49,6 @@ import plugily.projects.buildbattle.arena.options.ArenaOption;
 import plugily.projects.buildbattle.handlers.reward.Reward;
 import plugily.projects.buildbattle.menus.options.registry.particles.ParticleRefreshScheduler;
 import plugily.projects.buildbattle.menus.themevoter.BBTheme;
-import plugily.projects.buildbattle.user.User;
-import plugily.projects.buildbattle.utils.Debugger;
-import plugily.projects.buildbattle.utils.MessageUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
