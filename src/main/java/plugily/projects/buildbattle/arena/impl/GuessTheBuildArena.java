@@ -44,8 +44,6 @@ import plugily.projects.buildbattle.menus.options.registry.particles.ParticleRef
 import plugily.projects.buildbattle.menus.themevoter.BBTheme;
 
 import plugily.projects.buildbattle.user.User;
-import plugily.projects.buildbattle.utils.Debugger;
-import plugily.projects.buildbattle.utils.MessageUtils;
 import plugily.projects.commonsbox.minecraft.compat.VersionUtils;
 import plugily.projects.commonsbox.minecraft.configuration.ConfigUtils;
 import plugily.projects.commonsbox.minecraft.item.ItemBuilder;
@@ -549,7 +547,7 @@ public class GuessTheBuildArena extends BaseArena {
     // add all players to single plot
     Plot plot = getPlotManager().getPlots().get(0);
     for (Player player : getPlayers()) {
-        plot.addOwner(player);
+        plot.addMember(player, this, true);
         getPlugin().getUserManager().getUser(player).setCurrentPlot(plot);
     }
   }
@@ -557,8 +555,8 @@ public class GuessTheBuildArena extends BaseArena {
   //TODO marker
   private void allocatePlot(Player player) {
       Plot plot = getPlotManager().getPlots().get(0);
-      plot.getOwners().clear();
-      plot.addOwner(player);
+      plot.getMembers().clear();
+      plot.addMember(player, this, true);
   }
  
   public int getRound() {
