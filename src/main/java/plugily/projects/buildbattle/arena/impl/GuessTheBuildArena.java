@@ -151,8 +151,6 @@ public class GuessTheBuildArena extends BaseArena {
           for(Player player : getPlayers()) {
             playersPoints.put(player, 0);
           }
-          //TODO marker
-          // only 1 plot, so plot will be shared
           distributePlots();
           getPlotManager().teleportToPlots();
           setTimer(getPlugin().getConfigPreferences().getTimer(ConfigPreferences.TimerType.DELAYED_TASK, this));
@@ -176,9 +174,13 @@ public class GuessTheBuildArena extends BaseArena {
           }
           nextRoundCooldown = true;
           Bukkit.getScheduler().runTaskLater(getPlugin(), () -> nextRoundCooldown = false, 20L * getPlugin().getConfigPreferences().getTimer(ConfigPreferences.TimerType.DELAYED_TASK, this));
-          if(plot != null) {
-            Bukkit.getScheduler().runTaskLater(getPlugin(), () -> plot.getMembers().forEach(player -> player.setGameMode(GameMode.CREATIVE)), 20);
-          }
+          //TODO custom marker
+          // All players are members of the same plot so we don't want this
+          /*if(plot != null) {
+            Bukkit.getScheduler().runTaskLater(getPlugin(), () -> plot.getMembers().forEach(player -> {player.setGameMode(GameMode.CREATIVE);
+            }), 20);
+          }*/
+          //TODO end marker
           break;
         }
         setTimer(getTimer() - 1);
@@ -189,8 +191,10 @@ public class GuessTheBuildArena extends BaseArena {
         }
         if(currentBuilder == null && !nextRoundCooldown) {
           currentBuilder = getPlayers().get(round - 1);
-          //TODO marker
-          allocatePlot(currentBuilder);
+          //TODO custom marker
+          currentBuilder.setGameMode(GameMode.CREATIVE);
+          //allocatePlot(currentBuilder);
+          //TODO end marker
           openThemeSelectionInventoryToCurrentBuilder();
           setTimer(getPlugin().getConfigPreferences().getTimer(ConfigPreferences.TimerType.THEME_SELECTION, this));
           break;
@@ -288,6 +292,8 @@ public class GuessTheBuildArena extends BaseArena {
           setThemeSet(false);
           setCurrentTheme(null);
           whoGuessed.clear();
+          //TODO custom marker
+          // we need to reset the plot and count the long rounds
           getPlotManager().getPlots().get(0).resetPlot();
           round++;
           if(round > getPlayers().size()) {
@@ -302,14 +308,13 @@ public class GuessTheBuildArena extends BaseArena {
               }
               round = 1;
           }
-
-          //TODO marker/
+          //TODO end marker
           setTimer(getPlugin().getConfigPreferences().getTimer(ConfigPreferences.TimerType.DELAYED_TASK, this));
           nextRoundCooldown = true;
           Bukkit.getScheduler().runTaskLater(getPlugin(), () -> {
             nextRoundCooldown = false;
             currentBuilder = getPlayers().get(round - 1);
-            openThemeSelectionInventoryToCurrentBuilder();
+
             Plot plot = getPlotManager().getPlots().get(0);
             org.bukkit.Location plotLoc = plot == null ? null : plot.getTeleportLocation();
 
@@ -328,11 +333,10 @@ public class GuessTheBuildArena extends BaseArena {
               p.getInventory().clear(8);
               p.updateInventory();
             }
-
-            currentBuilder.setGameMode(GameMode.CREATIVE);
-
             openThemeSelectionInventoryToCurrentBuilder();
-
+            //TODO custom marker
+            currentBuilder.setGameMode(GameMode.CREATIVE);
+            //TODO end marker
             setTimer(getPlugin().getConfigPreferences().getTimer(ConfigPreferences.TimerType.THEME_SELECTION, this));
             if(getArenaState() != ArenaState.IN_GAME || themeSet) {
               return;
@@ -544,20 +548,21 @@ public class GuessTheBuildArena extends BaseArena {
     for(Plot plot : getPlotManager().getPlots()) {
       plot.getMembers().clear();
     }
+    //TODO custom marker
     // add all players to single plot
     Plot plot = getPlotManager().getPlots().get(0);
     for (Player player : getPlayers()) {
         plot.addMember(player, this, true);
         getPlugin().getUserManager().getUser(player).setCurrentPlot(plot);
     }
+    //TODO end marker
   }
 
-  //TODO marker
-  private void allocatePlot(Player player) {
+  /*private void allocatePlot(Player player) {
       Plot plot = getPlotManager().getPlots().get(0);
       plot.getMembers().clear();
       plot.addMember(player, this, true);
-  }
+  }*/
  
   public int getRound() {
     return round;
